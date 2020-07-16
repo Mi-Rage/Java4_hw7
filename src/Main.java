@@ -3,7 +3,29 @@ import java.util.NoSuchElementException;
 public class Main {
     public static void main(String[] args) {
         Graph g = new Graph();
-        
+
+        for (int i = 0; i < 10; i++) {
+            g.addVertex((char) ('a' + i));
+        }
+        /** a--b--g--j
+         *  |  |
+         *  b  e--h
+         *  |     |
+         *  c--f  i
+         */
+        g.addEdge(0,1);
+        g.addEdge(1,2);
+        g.addEdge(2,5);
+        g.addEdge(0,3);
+        g.addEdge(3,4);
+        g.addEdge(4,7);
+        g.addEdge(7,8);
+        g.addEdge(3,6);
+        g.addEdge(6,9);
+        //g.widthTraverse();
+        System.out.println();
+        g.widthTraverse(1,7);
+
     }
 }
  class Graph {
@@ -77,7 +99,7 @@ public class Main {
     public void widthTraverse() {
         Queue queue = new Queue(MAX_VERTICES);
         vertexList[0].wasVisited = true;
-        displayVertex(0);
+        //displayVertex(0);
         queue.insert(0);
         while (!queue.isEmpty()) {
             int vCurrent = queue.remove();
@@ -90,6 +112,34 @@ public class Main {
         }
 
     }
+
+     public void widthTraverse(int start, int finish) {
+         // Добавил с какого узла начинаем и проверку на конечный узел.
+         // Может я не так понял алгоритм, но в этой реализации мы находясь в узле смотрим на его связи
+         // и если в одной из связей искомый конечный узел - останавливаем поиск.
+         // В этой реализации мы не идём дальше по "очерченному" кругу поиска, найдя нужную связь вне его
+         // а просто его прекращаем.
+         Queue queue = new Queue(MAX_VERTICES);
+         vertexList[start].wasVisited = true;
+         //displayVertex(0);
+         queue.insert(start);
+         while (!queue.isEmpty()) {
+             int vCurrent = queue.remove();
+             displayVertex(vCurrent);
+             int vNext;
+             while ((vNext = getUnvisitedVertex(vCurrent)) != -1 && vNext != finish) {
+                 vertexList[vNext].wasVisited = true;
+                 queue.insert(vNext);
+             }
+             if (vNext == finish) {
+                 displayVertex(vNext);
+                 break;
+             }
+         }
+
+     }
+
+
 
     private void resetFlags() {
         for (int i = 0; i < size; i++) {
